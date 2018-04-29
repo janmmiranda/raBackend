@@ -1,13 +1,16 @@
 var express = require('express')
 var mysql = require('mysql')
+var  bodyParser = require('body-parser')
 
 var app = express()
 var con = mysql.createConnection({
-	host: "restauto.c8kfv5fb1sng.us-east-2.rds.amazonaws.com",
-	user: "restauto",
-	password: "restauto1",
-	database: "restauto"
+	 host: "restauto.c8kfv5fb1sng.us-east-2.rds.amazonaws.com",
+    user: "restauto",
+    password: "restauto1",
+    database: "restauto" 
+
 });
+app.use(bodyParser.json());
 
 con.connect(function(err) {
 	if (err) throw err;
@@ -100,6 +103,29 @@ app.get('/get_order/:id', function(req, res) {
 		}
 	});
 })
+
+app.post('/post_users', function(req, res) {
+	
+    var waiterID = req.body.waiterID;
+    var itemName = req.body.itemName;
+    var quantity = req.body.quantity;
+	var floorID  = req.body.floorID
+	var tableID  = req.body.tableID
+	var isFirstItem  = req.body.isFirstItem
+	var isCompleted  = req.body.isCompleted
+	var priceTimesQty= req.body.priceTimesQty
+    con.query("INSERT INTO orderedItem (waiterID, itemName, quantity, floorID, tableID, isFirstItem, isCompleted,priceTimesQty) values ('" + waiterID + "', '" + itemName + "', '" + quantity + "','"+ floorID + "', '" + tableID + "', '" + isFirstItem + "', '"+ isCompleted +"', '"+priceTimesQty+"' )", function (err, result, fields) {
+        if (err) {
+            res.json({"error": err})
+        }
+        if (result) {
+            res.json({"post_users": result})
+        } else {
+            res.json({"post_users": "default"})
+        }
+    })
+    //res.send(user_id + ' ' + token + ' ' + geo);
+});
 
 app.get('/get_reservations/:id', function(req, res) {
 	con.query("select * from reservation where lastName like '" + req.params.id + "'", function (err, result, fields) {
