@@ -3,10 +3,10 @@ var mysql = require('mysql')
 
 var app = express()
 var con = mysql.createConnection({
-	host: "",
-	user: "",
-	password: "",
-	database: ""
+	host: "restauto.c8kfv5fb1sng.us-east-2.rds.amazonaws.com",
+	user: "restauto",
+	password: "restauto1",
+	database: "restauto"
 });
 
 con.connect(function(err) {
@@ -74,6 +74,33 @@ app.get('/get_menu/:id', function(req, res) {
 	});
 })
 
+app.get('/get_order', function(req, res) {
+	con.query("SELECT * FROM orderedItem", function (err, result, fields) {
+		if (err) {
+			res.json({"error": err})
+		}
+		if (result) {
+			res.json({"get_order": result})
+		} else {
+			res.json({"get_order": "default"})
+		}
+	});
+})
+
+app.get('/get_order/:id', function(req, res) {
+	//console.log("id: " + req.params.id)
+	con.query("Select * from orderedItem where table like " + req.params.id + "", function (err, result, fields) {
+		if (err) {
+			res.json({"error": err})
+		}
+		if (result) {
+			res.json({"get_order": result})
+		} else {
+			res.json({"get_order": "default"})
+		}
+	});
+})
+
 app.get('/get_reservations/:id', function(req, res) {
 	con.query("select * from reservation where lastName like '" + req.params.id + "'", function (err, result, fields) {
 		if (err) {
@@ -117,6 +144,6 @@ app.get('/set_reservation', function(req, res) {
 	})
 })
 
-app.listen(3000, '0.0.0.0', function() {
-    console.log('Listening to port:  ' + 3000);
+app.listen(8080, '0.0.0.0', function() {
+    console.log('Listening to port:  ' + 8080);
 });
